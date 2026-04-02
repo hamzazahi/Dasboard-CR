@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { db } from "@/lib/firebase-admin";
+import { adminDb } from "@/lib/firebase-admin";
 import { generatePayfastSignature } from "@/lib/payfast-utils";
 import { FieldValue, Timestamp } from "firebase-admin/firestore";
 
@@ -49,6 +49,7 @@ export async function POST(req: Request) {
     const paymentStatus = payload.payment_status;
 
     if (paymentStatus === "COMPLETE") {
+      const db = adminDb();
       const orderRef = db.collection("payments").doc(orderId);
       const orderDoc = await orderRef.get();
 
@@ -58,30 +59,26 @@ export async function POST(req: Request) {
       }
 
       const orderData = orderDoc.data()!;
-      
-      // Update Payment Record
+
       await orderRef.update({
         status: "SUCCESS",
         payfastPaymentId: payload.pf_payment_id,
         completedAt: FieldValue.serverTimestamp(),
-        rawNotifyData: payload, // Store raw data for debugging/audit
+        rawNotifyData: payload,
       });
-      
-      // Update User Subscription in H360
-      const { userId, planId } = orderData; // userId is orgId in this context
+
+      const { userId, planId } = orderData;
       if (userId) {
         const nextMonth = new Date();
         nextMonth.setDate(nextMonth.getDate() + 30);
 
-        // Update Organization Document
         await db.collection("organizations").doc(userId).update({
           status: "active",
-          planTier: planId || "pro", // Default to pro if missing
-          subscriptionExpiresAt: Timestamp.fromDate(nextMonth), // 30 days safely stored as Firestore Timestamp
+          planTier: planId || "pro",
+          subscriptionExpiresAt: Timestamp.fromDate(nextMonth),
           lastUpdated: FieldValue.serverTimestamp()
         });
 
-        // Also update the user record for backward compatibility/individual flags
         await db.collection("users").doc(userId).update({
           isPremium: true,
           subscriptionEnd: Timestamp.fromDate(nextMonth),
@@ -90,7 +87,7 @@ export async function POST(req: Request) {
         console.log("Organization and User subscription updated successfully for:", userId);
       }
     } else if (paymentStatus === "CANCELLED") {
-        await db.collection("payments").doc(orderId).update({
+        await adminDb().collection("payments").doc(orderId).update({
             status: "CANCELLED",
             updatedAt: FieldValue.serverTimestamp()
         });

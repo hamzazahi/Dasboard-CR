@@ -1,13 +1,13 @@
 "use server";
 
-import { db } from "@/lib/firebase-admin";
+import { adminDb } from "@/lib/firebase-admin";
 import { generatePayfastSignature } from "@/lib/payfast-utils";
 import { headers } from "next/headers";
 
 export async function startH360Payment(userId: string, planId: string, amount: number, userEmail?: string) {
   try {
     // 1. Create a Pending Order in Firestore
-    const orderRef = await db.collection("payments").add({
+    const orderRef = await adminDb().collection("payments").add({
       userId,
       planId,
       amount,
