@@ -49,6 +49,13 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
 
 interface Plan {
     id: string;
@@ -70,6 +77,31 @@ export default function PlansPage() {
     const [editingPlan, setEditingPlan] = useState<Plan | null>(null);
     const [isEditDialogOpen, setIsEditDialogOpen] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [pricingCurrency, setPricingCurrency] = useState<"ZAR" | "USD">("ZAR");
+
+    const EXCHANGE_RATE = 16.40;
+
+    const zarRows = [
+        { users: "1–5",    appStore: true,  wls: "R49.00",   h360: "R10.00", total: "R99.00",    perUser: "R19.80" },
+        { users: "6–10",   appStore: false, wls: "R59.00",   h360: "R9.50",  total: "R154.00",   perUser: "R15.40" },
+        { users: "11–20",  appStore: false, wls: "R99.00",   h360: "R9.00",  total: "R279.00",   perUser: "R13.95" },
+        { users: "21–30",  appStore: false, wls: "R199.00",  h360: "R8.50",  total: "R454.00",   perUser: "R15.13" },
+        { users: "31–50",  appStore: false, wls: "R299.00",  h360: "R8.00",  total: "R699.00",   perUser: "R13.98" },
+        { users: "51–100", appStore: false, wls: "R399.00",  h360: "R7.50",  total: "R1,149.00", perUser: "R11.49" },
+        { users: ">101",   appStore: false, wls: "—",        h360: "—",      total: "—",         perUser: "—" },
+    ];
+
+    const usdRows = [
+        { users: "1–5",    appStore: true,  wls: "$2.99",  h360: "$0.61", total: "$6.04",  perUser: "$1.21" },
+        { users: "6–10",   appStore: false, wls: "$3.60",  h360: "$0.58", total: "$9.39",  perUser: "$0.94" },
+        { users: "11–20",  appStore: false, wls: "$6.04",  h360: "$0.55", total: "$17.01", perUser: "$0.85" },
+        { users: "21–30",  appStore: false, wls: "$12.13", h360: "$0.52", total: "$27.68", perUser: "$0.92" },
+        { users: "31–50",  appStore: false, wls: "$18.23", h360: "$0.49", total: "$42.62", perUser: "$0.85" },
+        { users: "51–100", appStore: false, wls: "$24.33", h360: "$0.46", total: "$70.06", perUser: "$0.70" },
+        { users: ">101",   appStore: false, wls: "—",      h360: "—",     total: "—",      perUser: "—" },
+    ];
+
+    const activePricingRows = pricingCurrency === "ZAR" ? zarRows : usdRows;
 
     useEffect(() => {
         const q = query(collection(db, "plans"), orderBy("maxIllnesses", "asc"));
@@ -238,8 +270,28 @@ export default function PlansPage() {
 
             <Card className="border-slate-200 dark:border-slate-800">
                 <CardHeader>
-                    <CardTitle>Option 2 – Pricing Schedule (ZAR)</CardTitle>
-                    <CardDescription>Per-user pricing tiers including WLS and H360 components</CardDescription>
+                    <div className="flex items-start justify-between gap-4">
+                        <div>
+                            <CardTitle>Option 2 – Pricing Schedule ({pricingCurrency})</CardTitle>
+                            <CardDescription>Per-user pricing tiers including WLS and H360 components</CardDescription>
+                        </div>
+                        <div className="flex items-center gap-3 shrink-0">
+                            {pricingCurrency === "USD" && (
+                                <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">
+                                    Exchange Rate: R{EXCHANGE_RATE.toFixed(2)}
+                                </span>
+                            )}
+                            <Select value={pricingCurrency} onValueChange={(v) => setPricingCurrency(v as "ZAR" | "USD")}>
+                                <SelectTrigger className="w-24 h-8 text-sm">
+                                    <SelectValue />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="ZAR">ZAR</SelectItem>
+                                    <SelectItem value="USD">USD</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+                    </div>
                 </CardHeader>
                 <CardContent>
                     <Table>
@@ -254,14 +306,7 @@ export default function PlansPage() {
                             </TableRow>
                         </TableHeader>
                         <TableBody>
-                            {[
-                                { users: "1–5",    appStore: true,  wls: "R49.00",   h360: "R10.00", total: "R99.00",    perUser: "R19.80" },
-                                { users: "6–10",   appStore: false, wls: "R59.00",   h360: "R9.50",  total: "R154.00",   perUser: "R15.40" },
-                                { users: "11–20",  appStore: false, wls: "R99.00",   h360: "R9.00",  total: "R279.00",   perUser: "R13.95" },
-                                { users: "21–30",  appStore: false, wls: "R199.00",  h360: "R8.50",  total: "R454.00",   perUser: "R15.13" },
-                                { users: "31–50",  appStore: false, wls: "R299.00",  h360: "R8.00",  total: "R699.00",   perUser: "R13.98" },
-                                { users: "51–100", appStore: false, wls: "R399.00",  h360: "R7.50",  total: "R1,149.00", perUser: "R11.49" },
-                            ].map((row) => (
+                            {activePricingRows.map((row) => (
                                 <TableRow key={row.users}>
                                     <TableCell className="font-medium">{row.users}</TableCell>
                                     <TableCell>{row.appStore ? <CheckCircle2 className="h-4 w-4 text-emerald-500" /> : "—"}</TableCell>
