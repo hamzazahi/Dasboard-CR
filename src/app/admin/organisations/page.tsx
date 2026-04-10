@@ -57,6 +57,8 @@ import {
     Calendar,
     Shield,
     Mail,
+    Eye,
+    EyeOff,
     Building2,
     Stethoscope,
     AlertTriangle,
@@ -104,6 +106,7 @@ export default function OrganisationsPage() {
     const [creating, setCreating] = useState(false);
     const [createError, setCreateError] = useState("");
     const [createSuccess, setCreateSuccess] = useState("");
+    const [showOrgPassword, setShowOrgPassword] = useState(false);
     const [formData, setFormData] = useState({
         orgName: "",
         adminEmail: "",
@@ -377,8 +380,17 @@ export default function OrganisationsPage() {
                             </div>
                             <div className="grid gap-2">
                                 <Label htmlFor="adminPassword">Admin Password</Label>
-                                <Input id="adminPassword" type="password" placeholder="Minimum 6 characters" value={formData.adminPassword}
-                                    onChange={(e) => setFormData({ ...formData, adminPassword: e.target.value })} disabled={creating} />
+                                <div className="relative">
+                                    <Input id="adminPassword" type={showOrgPassword ? "text" : "password"} placeholder="Minimum 6 characters" value={formData.adminPassword}
+                                        onChange={(e) => setFormData({ ...formData, adminPassword: e.target.value })} disabled={creating} className="pr-10" />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowOrgPassword(!showOrgPassword)}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                                    >
+                                        {showOrgPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                                    </button>
+                                </div>
                             </div>
                             <div className="grid gap-2">
                                 <Label htmlFor="planTier">Plan Tier</Label>

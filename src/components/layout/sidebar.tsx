@@ -5,7 +5,6 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   BarChart3,
   Building2,
@@ -115,7 +114,7 @@ export function Sidebar({ type, orgSlug }: SidebarProps) {
     <>
       <div
         className={cn(
-          "relative flex flex-col h-full border-r border-[#333333] bg-[#262626] text-sidebar-foreground transition-all duration-300 z-40",
+          "relative flex flex-col h-full border-r border-[#333333] bg-[#262626] text-sidebar-foreground transition-all duration-300 z-40 overflow-hidden",
           collapsed ? "w-20" : "w-64",
         )}
       >
@@ -184,7 +183,7 @@ export function Sidebar({ type, orgSlug }: SidebarProps) {
           )}
         </div>
 
-        <ScrollArea className="flex-1 px-3 py-4">
+        <div className="flex-1 min-h-0 overflow-y-auto px-3 py-4">
           <div className="space-y-1">
             {routes.map((route) => {
               const active = isActive(route.href);
@@ -211,7 +210,7 @@ export function Sidebar({ type, orgSlug }: SidebarProps) {
               );
             })}
           </div>
-        </ScrollArea>
+        </div>
 
         {!collapsed && (
           <div className="px-4 py-2 border-t border-[#333333]">

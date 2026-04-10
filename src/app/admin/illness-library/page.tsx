@@ -29,8 +29,16 @@ import {
     Trash2,
     Loader2,
     CheckCircle2,
-    ClipboardList
+    ClipboardList,
+    ChevronDown
 } from "lucide-react";
+import {
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
+} from "@/components/ui/select";
 import { Switch } from "@/components/ui/switch";
 import {
     collection,
@@ -62,6 +70,19 @@ interface Illness {
     specialist: string;
     isActive: boolean;
 }
+
+const ILLNESS_CATEGORIES = [
+    "Cardiovascular",
+    "Metabolic",
+    "Mental Health",
+    "Infectious Disease",
+    "Respiratory",
+    "Musculoskeletal",
+    "Hearing",
+    "Oncology",
+    "Neurological",
+    "Other",
+];
 
 export default function IllnessLibraryPage() {
     const router = useRouter();
@@ -246,58 +267,76 @@ export default function IllnessLibraryPage() {
                                         <TableCell></TableCell>
                                     </TableRow>
                                 ))
-                            ) : filteredIllnesses.map((illness) => (
-                                <TableRow key={illness.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-900/50 transition-colors border-slate-200 dark:border-slate-800">
-                                    <TableCell className="font-medium py-4 text-slate-900 dark:text-slate-50">
-                                        {illness.displayName}
-                                    </TableCell>
-                                    <TableCell>
-                                        <Badge variant="secondary" className="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-medium border-none capitalize">
-                                            {illness.category}
-                                        </Badge>
-                                    </TableCell>
-                                    <TableCell className="text-sm text-slate-500 dark:text-slate-400">{illness.specialist}</TableCell>
-                                    <TableCell>
-                                        {illness.isActive ? (
-                                            <Badge className="bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20 border-none px-2 shadow-none">Active</Badge>
-                                        ) : (
-                                            <Badge variant="secondary" className="bg-slate-500/10 text-slate-500 hover:bg-slate-500/20 border-none px-2 shadow-none">Inactive</Badge>
-                                        )}
-                                    </TableCell>
-                                    <TableCell className="text-right py-4 pr-6">
-                                        <div className="flex justify-end gap-1">
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                className="h-8 w-8 hover:bg-blue-500/10 hover:text-blue-500 transition-colors"
-                                                title="Manage Questions"
-                                                onClick={() => router.push(`/admin/illness-library/${illness.id}/questions`)}
-                                            >
-                                                <ClipboardList className="h-4 w-4" />
-                                            </Button>
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                className="h-8 w-8 hover:bg-primary/10 hover:text-primary transition-colors"
-                                                onClick={() => {
-                                                    setEditingIllness(illness);
-                                                    setIsDialogOpen(true);
-                                                }}
-                                            >
-                                                <Edit2 className="h-4 w-4" />
-                                            </Button>
-                                            <Button
-                                                variant="ghost"
-                                                size="icon"
-                                                className="h-8 w-8 hover:bg-rose-500/10 hover:text-rose-500 transition-colors"
-                                                onClick={() => handleDelete(illness.id)}
-                                            >
-                                                <Trash2 className="h-4 w-4" />
-                                            </Button>
-                                        </div>
-                                    </TableCell>
-                                </TableRow>
-                            ))}
+                            ) : (() => {
+                                const grouped: Record<string, typeof filteredIllnesses> = {};
+                                filteredIllnesses.forEach((illness) => {
+                                    const cat = illness.category || "Uncategorized";
+                                    if (!grouped[cat]) grouped[cat] = [];
+                                    grouped[cat].push(illness);
+                                });
+                                return Object.entries(grouped).map(([category, items]) => (
+                                    <React.Fragment key={category}>
+                                        <TableRow className="bg-slate-50/80 dark:bg-slate-900/60 border-slate-200 dark:border-slate-800">
+                                            <TableCell colSpan={5} className="py-2 px-4">
+                                                <span className="text-xs font-bold uppercase tracking-widest text-slate-500 dark:text-slate-400">{category}</span>
+                                                <span className="ml-2 text-xs text-slate-400">({items.length})</span>
+                                            </TableCell>
+                                        </TableRow>
+                                        {items.map((illness) => (
+                                            <TableRow key={illness.id} className="hover:bg-slate-50/50 dark:hover:bg-slate-900/50 transition-colors border-slate-200 dark:border-slate-800">
+                                                <TableCell className="font-medium py-4 pl-8 text-slate-900 dark:text-slate-50">
+                                                    {illness.displayName}
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Badge variant="secondary" className="bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 font-medium border-none capitalize">
+                                                        {illness.category}
+                                                    </Badge>
+                                                </TableCell>
+                                                <TableCell className="text-sm text-slate-500 dark:text-slate-400">{illness.specialist}</TableCell>
+                                                <TableCell>
+                                                    {illness.isActive ? (
+                                                        <Badge className="bg-emerald-500/10 text-emerald-500 hover:bg-emerald-500/20 border-none px-2 shadow-none">Active</Badge>
+                                                    ) : (
+                                                        <Badge variant="secondary" className="bg-slate-500/10 text-slate-500 hover:bg-slate-500/20 border-none px-2 shadow-none">Inactive</Badge>
+                                                    )}
+                                                </TableCell>
+                                                <TableCell className="text-right py-4 pr-6">
+                                                    <div className="flex justify-end gap-1">
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            className="h-8 w-8 hover:bg-blue-500/10 hover:text-blue-500 transition-colors"
+                                                            title="Manage Questions"
+                                                            onClick={() => router.push(`/admin/illness-library/${illness.id}/questions`)}
+                                                        >
+                                                            <ClipboardList className="h-4 w-4" />
+                                                        </Button>
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            className="h-8 w-8 hover:bg-primary/10 hover:text-primary transition-colors"
+                                                            onClick={() => {
+                                                                setEditingIllness(illness);
+                                                                setIsDialogOpen(true);
+                                                            }}
+                                                        >
+                                                            <Edit2 className="h-4 w-4" />
+                                                        </Button>
+                                                        <Button
+                                                            variant="ghost"
+                                                            size="icon"
+                                                            className="h-8 w-8 hover:bg-rose-500/10 hover:text-rose-500 transition-colors"
+                                                            onClick={() => handleDelete(illness.id)}
+                                                        >
+                                                            <Trash2 className="h-4 w-4" />
+                                                        </Button>
+                                                    </div>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))}
+                                    </React.Fragment>
+                                ));
+                            })()}
                         </TableBody>
                     </Table>
                 </CardContent>
@@ -324,12 +363,19 @@ export default function IllnessLibraryPage() {
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="category">Category</Label>
-                                <Input
-                                    id="category"
-                                    placeholder="e.g. Metabolic"
-                                    value={editingIllness.category}
-                                    onChange={(e) => setEditingIllness({ ...editingIllness, category: e.target.value })}
-                                />
+                                <Select
+                                    value={editingIllness.category || ""}
+                                    onValueChange={(val) => setEditingIllness({ ...editingIllness, category: val })}
+                                >
+                                    <SelectTrigger id="category">
+                                        <SelectValue placeholder="Select a category" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {ILLNESS_CATEGORIES.map((cat) => (
+                                            <SelectItem key={cat} value={cat}>{cat}</SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
                             </div>
                             <div className="space-y-2">
                                 <Label htmlFor="specialist">Specialist Type</Label>

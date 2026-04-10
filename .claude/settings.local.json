@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//d/dsbrd-main/src/**)",
+      "Read(//d/dsbrd-main/src/components/layout/**)"
+    ]
+  }
+}

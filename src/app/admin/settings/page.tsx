@@ -41,6 +41,7 @@ export default function AdminSettingsPage() {
     const [confirmPassword, setConfirmPassword] = useState("");
     const [currentPassword, setCurrentPassword] = useState("");
     const [showPasswords, setShowPasswords] = useState(false);
+    const [showCurrentPassword, setShowCurrentPassword] = useState(false);
     
     const [loading, setLoading] = useState(false);
     const [isReauthOpen, setIsReauthOpen] = useState(false);
@@ -273,14 +274,24 @@ export default function AdminSettingsPage() {
                         <div className="space-y-4 py-4">
                             <div className="space-y-2">
                                 <Label htmlFor="current-password">Current Password</Label>
-                                <Input 
-                                    id="current-password" 
-                                    type="password" 
-                                    value={currentPassword}
-                                    onChange={(e) => setCurrentPassword(e.target.value)}
-                                    autoFocus
-                                    required 
-                                />
+                                <div className="relative">
+                                    <Input
+                                        id="current-password"
+                                        type={showCurrentPassword ? "text" : "password"}
+                                        value={currentPassword}
+                                        onChange={(e) => setCurrentPassword(e.target.value)}
+                                        className="pr-10"
+                                        autoFocus
+                                        required
+                                    />
+                                    <button
+                                        type="button"
+                                        onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                                        className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                                    >
+                                        {showCurrentPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                                    </button>
+                                </div>
                             </div>
                         </div>
                         <DialogFooter>

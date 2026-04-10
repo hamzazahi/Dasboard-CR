@@ -61,6 +61,8 @@ import {
     Loader2,
     Plus,
     Trash2,
+    Eye,
+    EyeOff,
 } from "lucide-react";
 import { format } from "date-fns";
 
@@ -110,6 +112,7 @@ export default function PlatformUsersPage() {
     // Add User State
     const [isAddUserDialogOpen, setIsAddUserDialogOpen] = useState(false);
     const [newUser, setNewUser] = useState({ name: "", email: "", password: "", role: "patient", orgId: "none" });
+    const [showUserPassword, setShowUserPassword] = useState(false);
 
     // Delete User State
     const [userToDelete, setUserToDelete] = useState<PlatformUser | null>(null);
@@ -770,13 +773,22 @@ export default function PlatformUsersPage() {
                         </div>
                         <div className="grid grid-cols-4 items-center gap-4">
                             <Label className="text-right">Password</Label>
-                            <Input
-                                type="password"
-                                value={newUser.password}
-                                onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
-                                placeholder="Min 6 characters"
-                                className="col-span-3"
-                            />
+                            <div className="relative col-span-3">
+                                <Input
+                                    type={showUserPassword ? "text" : "password"}
+                                    value={newUser.password}
+                                    onChange={(e) => setNewUser({ ...newUser, password: e.target.value })}
+                                    placeholder="Min 6 characters"
+                                    className="pr-10"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={() => setShowUserPassword(!showUserPassword)}
+                                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
+                                >
+                                    {showUserPassword ? <EyeOff size={16} /> : <Eye size={16} />}
+                                </button>
+                            </div>
                         </div>
                         <div className="grid grid-cols-4 items-center gap-4">
                             <Label className="text-right">Role</Label>

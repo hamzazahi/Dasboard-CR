@@ -236,6 +236,46 @@ export default function PlansPage() {
                 </CardContent>
             </Card>
 
+            <Card className="border-slate-200 dark:border-slate-800">
+                <CardHeader>
+                    <CardTitle>Option 2 – Pricing Schedule (ZAR)</CardTitle>
+                    <CardDescription>Per-user pricing tiers including WLS and H360 components</CardDescription>
+                </CardHeader>
+                <CardContent>
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>Users</TableHead>
+                                <TableHead>APP Store</TableHead>
+                                <TableHead>WLS/month</TableHead>
+                                <TableHead>H360/user</TableHead>
+                                <TableHead>TOTAL</TableHead>
+                                <TableHead>/user</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {[
+                                { users: "1–5",    appStore: true,  wls: "R49.00",   h360: "R10.00", total: "R99.00",    perUser: "R19.80" },
+                                { users: "6–10",   appStore: false, wls: "R59.00",   h360: "R9.50",  total: "R154.00",   perUser: "R15.40" },
+                                { users: "11–20",  appStore: false, wls: "R99.00",   h360: "R9.00",  total: "R279.00",   perUser: "R13.95" },
+                                { users: "21–30",  appStore: false, wls: "R199.00",  h360: "R8.50",  total: "R454.00",   perUser: "R15.13" },
+                                { users: "31–50",  appStore: false, wls: "R299.00",  h360: "R8.00",  total: "R699.00",   perUser: "R13.98" },
+                                { users: "51–100", appStore: false, wls: "R399.00",  h360: "R7.50",  total: "R1,149.00", perUser: "R11.49" },
+                            ].map((row) => (
+                                <TableRow key={row.users}>
+                                    <TableCell className="font-medium">{row.users}</TableCell>
+                                    <TableCell>{row.appStore ? <CheckCircle2 className="h-4 w-4 text-emerald-500" /> : "—"}</TableCell>
+                                    <TableCell>{row.wls}</TableCell>
+                                    <TableCell>{row.h360}</TableCell>
+                                    <TableCell className="font-semibold">{row.total}</TableCell>
+                                    <TableCell>{row.perUser}</TableCell>
+                                </TableRow>
+                            ))}
+                        </TableBody>
+                    </Table>
+                </CardContent>
+            </Card>
+
             <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
                 <DialogContent className="sm:max-w-[425px]">
                     <DialogHeader>

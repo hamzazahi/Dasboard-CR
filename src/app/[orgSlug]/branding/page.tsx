@@ -133,7 +133,7 @@ export default function BrandingPage() {
     const canvas = cropCanvasRef.current;
     const img = cropImageRef.current;
     if (!canvas || !img) return;
-    const SIZE = 320;
+    const SIZE = 512;
     canvas.width = SIZE;
     canvas.height = SIZE;
     const ctx = canvas.getContext("2d");
@@ -650,7 +650,7 @@ export default function BrandingPage() {
 
       {cropModalOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
-          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-md mx-4 overflow-hidden">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl shadow-2xl w-full max-w-lg mx-4 overflow-hidden max-h-[90vh] flex flex-col">
             <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200 dark:border-slate-700">
               <div className="flex items-center gap-2">
                 <Crop className="w-5 h-5 text-primary" />
@@ -663,13 +663,13 @@ export default function BrandingPage() {
                 <X className="w-5 h-5 text-slate-500" />
               </button>
             </div>
-            <div className="p-6 space-y-4">
+            <div className="p-6 space-y-4 overflow-y-auto flex-1">
               <p className="text-sm text-slate-500">
                 Drag the image to reposition it within the crop frame. Use zoom
                 to fit.
               </p>
               <div
-                className="relative mx-auto w-64 h-64 bg-slate-100 dark:bg-slate-800 rounded-xl overflow-hidden border-2 border-dashed border-primary/40 cursor-move select-none"
+                className="relative mx-auto w-96 h-96 bg-slate-100 dark:bg-slate-800 rounded-xl overflow-hidden border-2 border-dashed border-primary/40 cursor-move select-none"
                 onMouseDown={handleCropMouseDown}
                 onMouseMove={handleCropMouseMove}
                 onMouseUp={handleCropMouseUp}
